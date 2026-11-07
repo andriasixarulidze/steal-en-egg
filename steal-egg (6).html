@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>მოიპარე კვერცხი</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff3d6;--panel:#fff;--ink:#2b2118;--mute:#7a6a58;--line:#ecd9b0;--accent:#ff7a1a;--good:#1f9d55;--bad:#d6334a;--belt:#6b5a48;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root:not([data-theme="light"]){color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1812;--panel:#2a231b;--ink:#fbeed6;--mute:#b8a68c;--line:#443828;--belt:#3a3025;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d1812;--panel:#2a231b;--ink:#fbeed6;--mute:#b8a68c;--line:#443828;--belt:#3a3025;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Georgian","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none}
+main{max-width:900px;margin:0 auto;padding:12px}
+h1{font-size:22px;margin:0;font-weight:800}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.coins{font-size:22px;font-weight:800;text-align:right}.coins small{display:block;font-size:12px;color:var(--mute);font-weight:400}
+section{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:10px;margin-top:10px}
+h2{font-size:14px;margin:0 0 8px;color:var(--mute);font-weight:700}
+.belt{position:relative;height:104px;background:var(--belt);border-radius:10px;overflow:hidden;background-image:repeating-linear-gradient(90deg,#0002 0 2px,transparent 2px 24px)}
+.item{position:absolute;top:6px;width:72px;height:92px;border-radius:10px;background:var(--panel);border:3px solid var(--c);text-align:center;font-size:10px;line-height:1.2;cursor:pointer;padding-top:4px;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:2px}
+.item.no{opacity:.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px}
+.slot{min-height:116px;border:3px dashed var(--line);border-radius:12px;text-align:center;padding:6px 4px;font-size:11px;position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:center;color:var(--mute)}
+.slot.full{border-style:solid;border-color:var(--c);color:var(--ink)}
+.egg{width:38px;height:48px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;box-shadow:inset -5px -6px 0 #0002,inset 4px 4px 0 #fff4;flex:none}
+.pet{font-size:36px;line-height:48px;height:48px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px) rotate(-4deg)}}
+@keyframes wob{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+.hatching .egg{animation:wob 1.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.pet,.hatching .egg{animation:none}}
+.bar{height:6px;background:var(--line);border-radius:4px;width:80%;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+.rival{margin-top:10px}.rival h3{font-size:13px;margin:0 0 6px}
+.tag{font-size:11px;padding:1px 7px;border-radius:9px;color:#fff;background:var(--good);font-weight:400}.tag.l{background:var(--bad)}
+button{font:inherit;font-size:13px;border:0;border-radius:10px;padding:8px 12px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}.ghost{background:var(--mute)}
+.sell{position:absolute;right:3px;top:3px;font-size:10px;padding:2px 6px;background:var(--mute)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0}
+.row>*{margin:2px 3px 2px 0}
+.mini{padding:3px 8px;font-size:12px}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9}
+.modal>div{background:var(--panel);border-radius:14px;padding:14px;max-width:460px;width:92%;max-height:86vh;overflow:auto}
+.book{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:3px;font-size:20px;text-align:center}
+.book span{background:var(--bg);border-radius:6px;padding:2px 0;cursor:pointer}.book .x{opacity:.25}
+input{font:inherit;padding:9px 11px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);width:100%;-webkit-user-select:text;user-select:text}
+#lobby{max-width:420px;margin:8vh auto 0;text-align:center}
+#lobby section{padding:16px}
+#qr{display:flex;justify-content:center;background:#fff;padding:10px;border-radius:10px;margin:8px auto;width:fit-content}
+#lion{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:70px;height:78px;padding:4px;border-radius:16px;background:var(--panel);border:3px solid #ffd700;box-shadow:0 0 16px #ffd700aa;z-index:8;display:none;flex-direction:column;align-items:center;justify-content:center;font-size:34px;line-height:1.1;color:var(--ink)}
+#lion small{font-size:11px;font-weight:800}#lion.no{opacity:.65;box-shadow:none}#lion.own{background:#ffd700;color:#2b2118}
+.evt{font-size:12px;margin:6px 0;padding:6px 10px;border-radius:10px;background:var(--panel);border:2px solid var(--line)}.evt.on{border-color:#e8a200;font-weight:700}.item.str{box-shadow:0 0 10px #e8a200}
+.king .pet{filter:drop-shadow(0 0 8px #ffd700);font-size:42px}
+#chatlog{max-height:200px;overflow:auto;font-size:13px;margin-bottom:6px;-webkit-user-select:text;user-select:text}.msg{padding:2px 0;word-break:break-word}.msg.sys{color:var(--accent);font-weight:700}
+#vbar{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:none;gap:6px;align-items:center;z-index:8}#vbar button{border-radius:22px;padding:11px 15px;box-shadow:0 2px 8px #0005}
+#toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center;z-index:20}
+html,body{height:100%;overflow:hidden}
+main{height:100%;max-width:560px;margin:0 auto;padding:6px 8px;display:flex;flex-direction:column;gap:2px}
+header{flex:none}h1{font-size:16px}.coins{font-size:18px}
+.pane{display:none;flex:1;min-height:0;overflow-y:auto}.pane.on{display:block}
+section{margin-top:6px;padding:8px}
+.evt{font-size:11px;margin:4px 0 0;padding:4px 8px;flex:none}
+.grid{grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
+.slot{min-height:92px;font-size:10px;padding:4px 2px}
+.belt{height:100px}
+#tabs{flex:none;display:flex;gap:4px;padding:4px 0 2px}#tabs button{flex:1;padding:6px 2px;font-size:11px;background:var(--panel);color:var(--ink);border:2px solid var(--line);line-height:1.25}#tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+#toast{bottom:calc(66px + env(safe-area-inset-bottom,0px))}
+#vbar{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+#lion{position:static;flex-direction:row;gap:4px;width:auto;height:auto;font-size:16px;padding:6px 10px;border-radius:10px;border-width:2px;box-shadow:none}#lion small{font-size:12px}
+#chatlog{max-height:none;height:36vh}
+.frow{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}.frow small{color:var(--mute);display:block}.fh{font-size:12px;color:var(--mute);margin:8px 0 2px;font-weight:700}
+.credit{font-size:12px;font-weight:700;color:var(--ink);text-align:center;flex:none;margin:4px auto;padding:5px 10px;border:2px solid var(--ink);border-radius:0;background:var(--panel);width:fit-content;max-width:100%}
+.coins{text-align:right}
+header{align-items:flex-start;flex-wrap:nowrap;flex-direction:row-reverse}
+#tabs{padding:0;gap:4px;margin-right:auto}#tabs button{flex:none;width:38px;height:38px;padding:0;font-size:18px;border-radius:10px;line-height:1}
+#toast{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+#vbar{bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+</style>
+</head>
+<body>
+<div id="lobby"><section>
+ <div style="font-size:54px">🥚</div><h1>მოიპარე კვერცხი</h1><div class="credit">თამაშის შემქმნელი: Andria Sixarulidze</div>
+ <p style="color:var(--mute);font-size:13px">დარეგისტრირდი ერთხელ (სახელი, გვარი, PIN). მერე ავტომატურად შეგიშვებს და პროგრესი შენახული გხვდება.</p>
+ <div id="cont"></div>
+ <div class="row"><input id="fn" maxlength="12" placeholder="სახელი" autocomplete="off"></div>
+ <div class="row"><input id="ln" maxlength="14" placeholder="გვარი" autocomplete="off"></div>
+ <div class="row"><input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="PIN (4-6 ციფრი)" autocomplete="off"></div>
+ <div class="row"><input id="code" maxlength="6" placeholder="ოთახის კოდი (მაგ. K7Q2M)" style="text-transform:uppercase"></div>
+ <div class="row" style="justify-content:center"><button data-a="join">შესვლა</button><button data-a="reg">რეგისტრაცია</button><button class="ghost" data-a="newroom">ახალი ოთახის კოდი</button></div>
+ <div id="lerr" style="color:var(--bad);font-size:13px;min-height:18px"></div>
+</section></div>
+<main id="game" style="display:none">
+<header><div class="coins"><span id="coins">100</span> 🪙<small id="inc"></small></div><nav id="tabs"><button class="on" data-a="tab" data-i="game" title="თამაში" aria-label="თამაში">🥚</button><button data-a="tab" data-i="room" title="ოთახი" aria-label="ოთახი">🏠</button><button data-a="tab" data-i="fr" title="მეგობრები" aria-label="მეგობრები">🤝</button><button data-a="tab" data-i="chat" title="ჩატი" aria-label="ჩატი">💬</button><button data-a="tab" data-i="more" title="მეტი" aria-label="მეტი">☰</button></nav></header>
+<div class="credit">თამაშის შემქმნელი: Andria Sixarulidze</div>
+<div id="evt" class="evt"></div>
+<div class="pane on" id="p_game">
+<section><h2>ლენტა: დააჭირე კვერცხს, რომ იყიდო</h2><div class="belt" id="belt"></div></section>
+<section><h2 id="mt">შენი ბაზა</h2><div class="grid" id="mine"></div>
+<div class="row"><button data-a="lock" id="lockBtn">🔒 დაცვა</button><button data-a="expand" id="expBtn" class="ghost"></button><button id="lion" data-a="lion"></button></div><div id="lockInfo" style="font-size:12px;color:var(--mute)"></div></section>
+</div>
+<div class="pane" id="p_room">
+<section id="tradeBox" style="display:none"><h2>გაცვლა</h2><div id="trades"></div></section>
+<section><h2>ოთახში მყოფების ბაზები: 🖐 მოიპარე, 🤝 გაცვალე</h2><div id="friends"></div></section>
+</div>
+<div class="pane" id="p_fr"><section><h2>🤝 ჩემი მეგობრები (ინახება სამუდამოდ)</h2>
+<div class="row"><input id="fn2" maxlength="12" placeholder="მეგობრის სახელი" style="flex:1;min-width:90px"><input id="ln2" maxlength="14" placeholder="გვარი" style="flex:1;min-width:90px"><button data-a="fadd">➕ დამატება</button></div>
+<div id="flist"></div></section></div>
+<div class="pane" id="p_chat"><section><h2>💬 ჩატი და ვოისი</h2><div class="row"><button data-a="vtoggle" id="vbtn">🎤 ვოისში შესვლა</button><button class="ghost mini" data-a="vmute" id="vmute" style="display:none">🎙 ჩართულია</button></div><div id="vlist" style="font-size:12px;color:var(--mute);margin-bottom:6px"></div><div id="chatlog"></div><div class="row"><input id="chatin" maxlength="200" placeholder="დაწერე შეტყობინება..." style="flex:1;min-width:0"><button data-a="send">გაგზავნა</button></div></section></div>
+<div class="pane" id="p_more"><section><h2>მენიუ</h2><div id="net" style="font-size:13px;color:var(--mute);margin-bottom:8px"></div>
+<div class="row"><button data-a="invite">👥 დაპატიჟება</button><button class="ghost" data-a="book">📖 კოლექცია <span id="fnd">0</span>/1B</button><button class="ghost" data-a="leave">გასვლა</button></div></section></div>
+
+</main>
+<div id="modal"></div><div id="toast"></div><div id="vbar"><button id="vfab" data-a="vfab">🎤 ვოისი</button><button id="vexit" class="ghost" data-a="vtoggle" style="display:none">✕</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+var BASE="https://claude.ai/artifact/Bdy3NUiscyZN5rQ1u4oP7V";
+var TIERS=["ჩვეულებრივი","მუქი","ბრწყინვალე","იშვიათი","ჯადოსნური","ეპიკური","ოქროს","კოსმოსური","ლეგენდარული","უკვდავი"];
+var TCOL=["#8a8a8a","#5f9150","#2f9d8f","#2f7bd9","#6a5acd","#9b3fd1","#d63f9a","#e8742a","#e8a200","#ff3b3b"];
+var CR="🐣 წიწილა|🐥 ბარტყი|🦆 იხვი|🦢 გედი|🦉 ბუ|🦅 არწივი|🦜 თუთიყუში|🦩 ფლამინგო|🕊 მტრედი|🐧 პინგვინი|🐸 ბაყაყი|🐢 კუ|🦎 ხვლიკი|🐍 გველი|🐊 ნიანგი|🐙 რვაფეხა|🦑 კალმარი|🦀 კიბორჩხალა|🦞 ლობსტერი|🐠 თევზი|🐬 დელფინი|🐳 ვეშაპი|🦈 ზვიგენი|🐝 ფუტკარი|🐞 ჭიამაია|🦋 პეპელა|🐌 ლოკოკინა|🐜 ჭიანჭველა|🕷 ობობა|🦂 მორიელი|🐭 თაგვი|🐹 ზაზუნა|🐰 კურდღელი|🦊 მელა|🐻 დათვი|🐼 პანდა|🐨 კოალა|🐯 ვეფხვი|🦁 ლომი|🐮 ძროხა|🐷 ღორი|🐵 მაიმუნი|🦍 გორილა|🐘 სპილო|🦒 ჟირაფი|🦓 ზებრა|🐴 ცხენი|🦄 ერთრქა|🐪 აქლემი|🦘 კენგურუ|🦥 ზარმაცა|🦦 წავი|🦔 ზღარბი|🐿 ციყვი|🦇 ღამურა|🐺 მგელი|🐗 ტახი|🦌 ირემი|🐐 თხა|🐑 ცხვარი|🐕 ძაღლი|🐈 კატა|🐓 მამალი|🦃 ინდაური|🦚 ფარშევანგი|🦏 მარტორქა|🦛 ბეჰემოტი|🐲 დრაკონი|🦖 დინოზავრი|🦕 დიპლოდოკი|👻 მოჩვენება|👽 უცხოპლანეტელი|🤖 რობოტი|👾 მონსტრი|🎃 გოგრა|🍄 სოკო|🌵 კაქტუსი|🌻 მზესუმზირა|🍉 საზამთრო|🍕 პიცა|🍔 ბურგერი|🍩 დონატი|🍪 ორცხობილა|🧁 ქაფქეიქი|🍦 ნაყინი|🥑 ავოკადო|🍓 მარწყვი|🍒 ალუბალი|🍋 ლიმონი|🍇 ყურძენი|⚽ ბურთი|🎈 ბუშტი|🎲 კამათელი|🚀 რაკეტა|🛸 თეფში|⭐ ვარსკვლავი|🌙 მთვარე|☄ კომეტა|🔮 ბროლი|💎 ალმასი".split("|");
+var N=1e9,LION=N,SC=5,EV={on:false,days:0,date:null};
+function H(i){var h=Math.imul(i^0x9e3779b9,0x85ebca6b);h^=h>>>13;h=Math.imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0}
+var EM={},SM={};
+function mkE(i){if(EM[i])return EM[i];var r;
+ if(i===LION)r={n:"მეფე ლომი",e:"🦁",cn:"მეფე ლომი",p:5e11,inc:2.5e9,h:120,c:"#ffd700",t:10};
+ else{var f=i/(N-1),t=Math.min(9,Math.floor(i/1e8)),c=CR[H(i)%100],k=c.indexOf(" "),p=Math.max(50,Math.round(50*Math.pow(6e6,f)));
+  r={n:TIERS[t]+" "+c.slice(k+1)+" №"+(i+1),e:c.slice(0,k),cn:c.slice(k+1),p:p,inc:p/(25+f*999/18),h:Math.round(6+60*Math.pow(f,.8)),c:TCOL[t],t:t}}
+ return EM[i]=r}
+function mkS(i){if(SM[i])return SM[i];var r;
+ if(i===LION)r='<div class="egg" style="background:radial-gradient(circle at 32% 28%,#fff9,transparent 38%),linear-gradient(180deg,#ffd700,#ff9d00);filter:drop-shadow(0 0 10px #ffd700)"></div>';
+ else{var hh=H(i),t=Math.min(9,Math.floor(i/1e8)),h1=hh%360,h2=(h1+140)%360,b="hsl("+h1+",70%,62%)",a="hsl("+h2+",75%,45%)",bg;
+  switch((hh>>>9)%5){case 0:bg="radial-gradient(circle at 32% 28%,#fff9,transparent 38%),"+b;break;
+  case 1:bg="radial-gradient(circle at 30% 42%,"+a+" 0 4px,transparent 5px),radial-gradient(circle at 68% 62%,"+a+" 0 5px,transparent 6px),radial-gradient(circle at 55% 25%,"+a+" 0 3px,transparent 4px),"+b;break;
+  case 2:bg="repeating-linear-gradient(0deg,"+a+" 0 5px,transparent 5px 11px),"+b;break;
+  case 3:bg="repeating-linear-gradient(55deg,"+a+" 0 4px,transparent 4px 10px),"+b;break;
+  default:bg="linear-gradient(180deg,"+b+" 50%,"+a+" 50%)"}
+  r='<div class="egg" style="background:'+bg+(t>2?";filter:drop-shadow(0 0 "+(t-1)+"px "+TCOL[t]+")":"")+'"></div>'}
+ return SM[i]=r}
+function px(f){return new Proxy({},{get:function(_,k){if(typeof k!=="string"||k==="")return undefined;var i=+k;return(i>=0&&i<=N&&i===Math.floor(i))?f(i):undefined}})}
+var E=px(mkE),SP=px(mkS);
+var EV_H=10,EV_LEN=60;
+function evInfo(){var d=new Date(),x=new Date(d.getFullYear(),d.getMonth(),d.getDate(),EV_H,0,0);x.setDate(x.getDate()+(6-d.getDay()+7)%7);var end=new Date(x.getTime()+EV_LEN*6e4);
+ if(d>=end){x.setDate(x.getDate()+7);end=new Date(x.getTime()+EV_LEN*6e4)}
+ var on=d>=x&&d<end;return{on:on,days:Math.round((new Date(x.getFullYear(),x.getMonth(),x.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/864e5),left:on?Math.ceil((end-d)/6e4):0}}
+function INC(e){return EE(e).inc*(e.s?SC:1)}
+function capIdx(){var w=Math.max(cur()*3,150);return Math.max(2,Math.min(N-1,Math.floor(Math.log(w/50)/Math.log(6e6)*(N-1))))}
+function beltPick(){return Math.min(N-1,Math.floor(capIdx()*Math.pow(Math.random(),.6)))}
+function strongPick(){return Math.min(N-1,Math.floor(capIdx()*(.85+.15*Math.random())))}
+var me,db,user,myId,room="",online=false,others={},names={},inbox=[],seen={},busy=Promise.resolve(),pq=Promise.resolve(),belt=[],spawn=1,bid=1,pending=0,modal=null,mkey="",unsubs=[],timer=0,started=false,chat=[],lastSend=0,voice={on:false,stream:null,pcs:{},early:{},ids:[]},sigSeen={},vq=Promise.resolve();
+function $(i){return document.getElementById(i)}
+function now(){return Date.now()}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return"&#"+c.charCodeAt(0)+";"})}
+function EE(e){return E[(e&&e.r|0)]||E[0]}
+function fmt(n){var u=["","K","M","B","T","Qa"],i=0;while(n>=1000&&i<5){n/=1000;i++}return(i&&n<100?n.toFixed(1).replace(/\.0$/,""):Math.floor(n))+u[i]}
+function uid(){return now().toString(36)+Math.random().toString(36).slice(2,7)}
+function toast(m){var t=$("toast");t.textContent=m;t.style.opacity=1;clearTimeout(toast.k);toast.k=setTimeout(function(){t.style.opacity=0},2300)}
+function nm(i){return names[i]||"მეგობარი"}
+function newMe(n){return{name:n,eggs:[],slots:4,coins:100,ts:now(),lockUntil:0,lockCd:0,offers:[],friends:[],found:{}}}
+function cur(end){var t=end||now(),c=me.coins;me.eggs.forEach(function(e){var s=Math.max(me.ts,e.hatchAt);if(t>s)c+=INC(e)*(t-s)/1000});return c}
+var acc=null;
+function persist(){if(!online)return;var d=JSON.parse(JSON.stringify(me));try{localStorage.setItem("se_save_"+myId,JSON.stringify(d))}catch(e){}
+ busy=busy.then(function(){return Promise.all([db.doc("rooms/"+room+"/players/"+myId).set(d),db.doc("logins/"+myId).set({fn:acc.fn,ln:acc.ln,ph:acc.ph,me:d})])}).catch(function(){toast("შენახვა ვერ მოხერხდა")})}
+function act(fn){me.coins=cur();me.ts=now();fn();persist()}
+function addEgg(e){me.eggs.push(e);me.found[e.r|0]=1}
+function reply(to,o){o.at=now();o.fromName=me.name;return db.collection("rooms/"+room+"/inbox/"+to+"/items").add(o)}
+function ipath(id){return db.doc("rooms/"+room+"/inbox/"+myId+"/items/"+id)}
+function free(){return me.slots-me.eggs.length}
+function expCost(){return 500*Math.pow(4,me.slots-4)}
+
+function proc(d){
+ var x=d.data,del=function(){return ipath(d.id).delete().catch(function(){})};
+ if(x.fromName)names[x.from]=x.fromName;
+ if(x.t==="steal"){
+  if(now()-x.at>15000)return del();
+  var why=null,egg=me.eggs.filter(function(e){return e.id===x.egg})[0];
+  if(me.lockUntil>now())why="ბაზა დაცულია";else if(!egg)why="კვერცხი აღარ არის";else if(Math.random()<.25)why="დაგინახეს!";
+  if(why){toast("🛡 "+nm(x.from)+"-ს ვერ მოგპარა");return reply(x.from,{t:"fail",why:why}).then(del)}
+  act(function(){me.eggs=me.eggs.filter(function(e){return e!==egg})});
+  toast("😈 "+nm(x.from)+" მოგპარა კვერცხი!");
+  return busy.then(function(){return reply(x.from,{t:"loot",egg:egg})}).then(del)}
+ if(x.t==="loot"){act(function(){addEgg(x.egg)});pending=0;toast("😎 მოიპარე: "+EE(x.egg).n+"!");if(EE(x.egg).p>=1e6)sendChat("😎 "+me.name+" მოიპარა "+EE(x.egg).e+" "+EE(x.egg).n+" "+(x.fromName||"მეგობარს")+"-ს!",true);return del()}
+ if(x.t==="fail"){pending=0;toast("❌ "+(x.why||"ვერ მოიპარე"));return del()}
+ if(x.t==="traded"||x.t==="returned"){act(function(){addEgg(x.egg);me.offers=me.offers.filter(function(o){return o.id!==x.tid})});toast(x.t==="traded"?"🤝 გაცვლა შედგა!":"შეთავაზება უარყვეს, კვერცხი დაგიბრუნდა");return del()}
+ return Promise.resolve()}
+var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"}]};
+function vsend(to,o){o.from=myId;o.at=now();return db.collection("rooms/"+room+"/sig/"+to+"/items").add(o)}
+function dropPc(id){var v=voice.pcs[id];if(v){try{v.pc.close()}catch(e){}delete voice.pcs[id]}var a=document.getElementById("va_"+id);if(a)a.remove()}
+function mkpc(id){var pc=new (window.RTCPeerConnection||window.webkitRTCPeerConnection)(ICE),v={pc:pc,q:voice.early[id]||[]};delete voice.early[id];voice.pcs[id]=v;
+ voice.stream.getTracks().forEach(function(t){pc.addTrack(t,voice.stream)});
+ pc.onicecandidate=function(e){if(e.candidate)vsend(id,{k:"ice",d:JSON.stringify(e.candidate)}).catch(function(){})};
+ pc.ontrack=function(e){var a=document.getElementById("va_"+id);if(!a){a=document.createElement("audio");a.id="va_"+id;a.autoplay=true;document.body.appendChild(a)}a.srcObject=e.streams[0];a.play().catch(function(){})};
+ pc.onconnectionstatechange=function(){if(pc.connectionState==="connected")toast("🎤 დაუკავშირდი: "+nm(id));if(pc.connectionState==="failed")toast("🎤 ვერ დაუკავშირდი: "+nm(id))};
+ return v}
+async function setRD(v,d){await v.pc.setRemoteDescription(JSON.parse(d));v.q.forEach(function(c){v.pc.addIceCandidate(c).catch(function(){})});v.q=[]}
+async function vcall(id){var v=mkpc(id),o=await v.pc.createOffer();await v.pc.setLocalDescription(o);await vsend(id,{k:"offer",d:JSON.stringify(o)})}
+async function vproc(x){var d=x.data;if(!voice.on||now()-d.at>30000)return;var v=voice.pcs[d.from];
+ if(d.k==="offer"){if(v)dropPc(d.from);v=mkpc(d.from);await setRD(v,d.d);var an=await v.pc.createAnswer();await v.pc.setLocalDescription(an);await vsend(d.from,{k:"answer",d:JSON.stringify(an)})}
+ else if(d.k==="answer"&&v){await setRD(v,d.d)}
+ else if(d.k==="ice"){var c=JSON.parse(d.d);if(v&&v.pc.remoteDescription)v.pc.addIceCandidate(c).catch(function(){});else if(v)v.q.push(c);else(voice.early[d.from]=voice.early[d.from]||[]).push(c)}}
+function vsync(){if(!voice.on)return;voice.ids.forEach(function(id){if(id!==myId&&!voice.pcs[id]&&myId<id)vcall(id).catch(function(){})});
+ Object.keys(voice.pcs).forEach(function(id){if(voice.ids.indexOf(id)<0)dropPc(id)})}
+async function vjoin(){
+ if(!online){toast("ვოისი ონლაინ რეჟიმშია");return}
+ if(!navigator.mediaDevices||!(window.RTCPeerConnection||window.webkitRTCPeerConnection)){toast("ამ ბრაუზერში ვოისი არ მუშაობს");return}
+ try{voice.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){toast("🎤 მიკროფონი ვერ ჩაირთო: ამ გვერდს ნებართვა არ აქვს");return}
+ voice.on=true;
+ await db.doc("rooms/"+room+"/voice/"+myId).set({name:me.name,at:now()}).catch(function(){});
+ vsync()}
+function vleave(){if(!voice.on)return;voice.on=false;Object.keys(voice.pcs).forEach(dropPc);
+ if(voice.stream){voice.stream.getTracks().forEach(function(t){t.stop()});voice.stream=null}
+ if(db&&room)db.doc("rooms/"+room+"/voice/"+myId).delete().catch(function(){})}
+function chatRender(){var l=$("chatlog"),near=l.scrollHeight-l.scrollTop-l.clientHeight<40;
+ l.innerHTML=chat.slice(-40).map(function(m){return m.sys?'<div class="msg sys">'+esc(m.text)+'</div>':'<div class="msg"><b>'+esc(m.name)+':</b> '+esc(m.text)+'</div>'}).join("")||'<div class="msg" style="color:var(--mute)">ჯერ შეტყობინება არ არის</div>';
+ if(near)l.scrollTop=l.scrollHeight}
+function sendChat(text,sys){text=(text||"").trim().slice(0,200);if(!text||!online)return;
+ if(!sys&&now()-lastSend<800)return;lastSend=now();
+ db.collection("rooms/"+room+"/chat").add({from:myId,name:me.name,text:text,at:now(),sys:!!sys}).catch(function(){toast("ვერ გაიგზავნა")})}
+function accept(id){var t=inbox.filter(function(x){return x.id===id})[0];if(!t)return;var x=t.data;
+ var mine=me.eggs.filter(function(e){return e.id===x.want})[0];
+ if(!mine){toast("ეს კვერცხი აღარ გაქვს");return decline(id)}
+ act(function(){me.eggs=me.eggs.filter(function(e){return e!==mine});addEgg(x.give)});
+ busy.then(function(){return reply(x.from,{t:"traded",egg:mine,tid:id})}).then(function(){return ipath(id).delete()});toast("🤝 გაცვალე!")}
+function decline(id){var t=inbox.filter(function(x){return x.id===id})[0];if(!t)return;
+ reply(t.data.from,{t:"returned",egg:t.data.give,tid:id}).then(function(){return ipath(id).delete()})}
+
+function eggBox(e,extra,attrs){var r=EE(e),h=e.hatchAt<=now(),left=Math.max(0,(e.hatchAt-now())/1000);
+ return '<div class="slot full '+(h?"":"hatching")+(e.r>=LION?" king":"")+'" style="--c:'+r.c+'" '+(attrs||"")+'>'+(h?'<div class="pet">'+r.e+'</div>':SP[e.r|0]||SP[0])+'<b>'+(e.s?"⭐ ":"")+esc(r.n)+'</b>'+
+ (h?"+"+fmt(r.inc*(e.s?SC:1))+"/წმ · "+fmt(r.p/2)+"🪙":'<div class="bar"><i style="width:'+Math.min(100,100*(1-left/r.h))+'%"></i></div>'+Math.ceil(left)+" წმ")+(extra||"")+'</div>'}
+
+function render(){
+ var t=now(),w=cur();$("coins").textContent=fmt(w);
+ var inc=0;me.eggs.forEach(function(e){if(e.hatchAt<=t)inc+=INC(e)});$("inc").textContent="+"+fmt(inc)+" / წმ";
+ $("net").textContent=(online?"🟢 ოთახი "+room:"⚪ ოფლაინ რეჟიმი")+" · "+me.name;
+ $("fnd").textContent=Object.keys(me.found).length;if(curTab==="fr")frRender();var ev=$("evt");ev.className="evt"+(EV.on?" on":"");ev.textContent=EV.on?"⭐ ახლა ძლიერი კვერცხების საათია! ლენტაზე ⭐ კვერცხები ჩნდება (×5 შემოსავალი, ფასი ×2). დარჩა "+EV.left+" წთ":"⭐ ძლიერი კვერცხები ყოველ შაბათს "+EV_H+":00-ზე ("+EV_LEN+" წთ). შემდეგი: "+(EV.days?EV.days+" დღეში":"დღეს");
+ $("vbtn").textContent=voice.on?"🎤 გამოსვლა ვოისიდან":"🎤 ვოისში შესვლა";var mt2=voice.on&&voice.stream&&voice.stream.getAudioTracks()[0];$("vfab").textContent=voice.on?(mt2&&!mt2.enabled?"🔇 გამორთულია":"🎙 ვოისი · "+voice.ids.length):"🎤 ვოისი";$("vexit").style.display=voice.on?"inline-block":"none";$("vmute").style.display=voice.on?"inline-block":"none";
+ $("vlist").textContent=voice.ids.length?"🎤 ვოისში: "+voice.ids.map(function(i){return i===myId?me.name:nm(i)}).join(", "):"ვოისში ჯერ არავინ არის. საჭიროა მიკროფონის ნებართვა.";
+ var ln=$("lion"),has=me.eggs.some(function(e){return e.r===LION});ln.className=has?"own":(w<5e11?"no":"");ln.innerHTML="<span>🦁</span><small>"+(has?"👑 გყავს":"500B 🪙")+"</small>";
+ $("belt").innerHTML=belt.map(function(o){var r=E[o.r],pr=r.p*(o.s?2:1);return '<div class="item'+(o.s?" str":"")+(w<pr?" no":"")+'" style="left:'+o.x+'%;--c:'+r.c+'" data-a="buy" data-i="'+o.id+'">'+SP[o.r]+'<span>'+(o.s?"⭐ ":"")+esc(r.cn)+'</span><b>'+fmt(pr)+' 🪙</b></div>'}).join("");
+ var g="";for(var i=0;i<Math.max(me.slots,me.eggs.length);i++){var e=me.eggs[i];g+=e?eggBox(e,'<button class="sell" data-a="sell" data-i="'+esc(e.id)+'">გაყიდვა</button>'):'<div class="slot">ცარიელი</div>'}
+ $("mine").innerHTML=g;$("mt").textContent="შენი ბაზა ("+me.eggs.length+"/"+me.slots+")";
+ var eb=$("expBtn");eb.textContent=me.slots>=16?"მაქსიმუმი":"➕ ადგილი: "+fmt(expCost())+" 🪙";eb.disabled=me.slots>=16;
+ var on=t<me.lockUntil,cd=t<me.lockCd;$("lockBtn").disabled=on||cd;
+ var mmss=function(ms){var q=Math.max(0,Math.ceil(ms/1000)),m=Math.floor(q/60),r=q%60;return m+":"+(r<10?"0":"")+r};$("lockInfo").textContent=on?"🔒 დაცულია, დარჩა: "+mmss(me.lockUntil-t):cd?"მზად იქნება: "+mmss(me.lockCd-t):"ქურდებისგან 1 საათით იცავს";
+ var h="";
+ inbox.forEach(function(x){var d=x.data;if(d.t!=="trade")return;var wn=me.eggs.filter(function(e){return e.id===d.want})[0];
+  h+='<div class="row"><b>'+esc(nm(d.from))+'</b> გთავაზობს: '+esc(EE(d.give).e+" "+EE(d.give).n)+' სანაცვლოდ: '+(wn?esc(EE(wn).e+" "+EE(wn).n):"(აღარ გაქვს)")+'<button class="mini" data-a="acc" data-i="'+esc(x.id)+'">თანხმობა</button><button class="mini ghost" data-a="dec" data-i="'+esc(x.id)+'">უარი</button></div>'});
+ me.offers.forEach(function(o){h+='<div class="row">შენი შეთავაზება ('+esc(o.toName||"მეგობარი")+'): '+esc(EE(o.egg).e+" "+EE(o.egg).n)+'<button class="mini ghost" data-a="cancel" data-i="'+esc(o.id)+'">გაუქმება</button></div>'});
+ $("tradeBox").style.display=h?"block":"none";$("trades").innerHTML=h;
+ var ids=Object.keys(others);
+ $("friends").innerHTML=ids.length?ids.map(function(id){var p=others[id],lk=(p.lockUntil|0)>t,es=Array.isArray(p.eggs)?p.eggs:[];
+  return '<div class="rival"><h3>'+esc(nm(id))+' <span class="tag'+(lk?" l":"")+'">'+(lk?"🔒 დაცულია":"ღიაა")+'</span></h3><div class="grid">'+
+  es.map(function(e){return eggBox(e,'<div class="row" style="justify-content:center"><button class="mini" data-a="steal" data-p="'+esc(id)+'" data-i="'+esc(e.id)+'">🖐</button><button class="mini ghost" data-a="trade" data-p="'+esc(id)+'" data-i="'+esc(e.id)+'">🤝</button></div>')}).join("")+(es.length?"":'<div class="slot">ცარიელია</div>')+'</div></div>'}).join(""):
+  '<p style="color:var(--mute);font-size:13px">ჯერ არავინ არის. დააჭირე 👥 დაპატიჟებას და გაუგზავნე კოდი მეგობრებს.</p>';
+ modalRender()}
+
+function modalRender(){var m=$("modal"),k=modal?JSON.stringify(modal)+(modal.k==="trade"?me.eggs.map(function(e){return e.id}).join():modal.k==="book"?Object.keys(me.found).length:""):"";
+ if(k===mkey)return;mkey=k;
+ if(!modal){m.innerHTML="";return}
+ var c="";
+ if(modal.k==="trade"){var tg=others[modal.p],te=tg&&(tg.eggs||[]).filter(function(e){return e.id===modal.i})[0];
+  c='<b>'+(te?"გაცვალე "+esc(nm(modal.p))+"-ს "+esc(EE(te).e+" "+EE(te).n)+" ამით:":"კვერცხი აღარ არსებობს")+'</b><div class="row">'+(me.eggs.map(function(e){return '<button class="mini" data-a="offer" data-i="'+esc(e.id)+'">'+EE(e).e+' '+esc(EE(e).n)+'</button>'}).join("")||"კვერცხი არ გაქვს")+'</div>'}
+ else if(modal.k==="invite"){c='<b>მეგობრების დაპატიჟება</b><p style="font-size:13px">ოთახის კოდი: <b style="font-size:20px;letter-spacing:2px">'+esc(room)+'</b></p><div id="qr"></div><input id="lnk" readonly value="'+BASE+'#'+esc(room)+'"><p style="font-size:12px;color:var(--mute)">ლინკის გახსნა და თამაში Claude-ის ანგარიშით შეიძლება. QR-ს კამერით დაასკანერებენ.</p><div class="row"><button data-a="copy">ლინკის კოპირება</button><button class="ghost" data-a="close">დახურვა</button></div>'}
+ else if(modal.k==="book"){var ks=Object.keys(me.found).map(Number).sort(function(a,b){return a-b}),s="";ks.slice(0,600).forEach(function(i){s+='<span data-a="info" data-i="'+i+'">'+E[i].e+'</span>'});
+  c='<b>📖 კოლექცია: '+ks.length+' / 1 000 000 000</b><div class="book" style="margin:8px 0">'+(s||'<p style="grid-column:1/-1;font-size:13px">ჯერ ცარიელია</p>')+'</div>'+(ks.length>600?'<p style="font-size:12px">ნაჩვენებია პირველი 600</p>':'')+'<button class="ghost" data-a="close">დახურვა</button>'}
+ m.innerHTML='<div class="modal" data-a="close"><div><div style="position:sticky;top:-14px;background:var(--panel);text-align:right;padding-bottom:6px;z-index:1"><button class="mini ghost" data-a="close">✕ დახურვა</button></div>'+c+(modal.k==="trade"?'<div class="row"><button class="ghost" data-a="close">დახურვა</button></div>':"")+'</div></div>';
+ if(modal.k==="invite"&&window.QRCode&&$("qr"))try{new QRCode($("qr"),{text:BASE+"#"+room,width:170,height:170})}catch(e){}}
+
+document.addEventListener("pointerdown",function(ev){
+ var el=ev.target.closest("[data-a]");if(!el)return;var a=el.dataset.a,i=el.dataset.i,p=el.dataset.p;if(a==="close"&&el.classList.contains("modal")&&ev.target!==el)return;
+if(a==="join")return enter($("fn").value,$("ln").value,$("pin").value,$("code").value,"login");
+ if(a==="reg")return enter($("fn").value,$("ln").value,$("pin").value,$("code").value,"reg");
+ if(a==="cont"){var q=sess();return q&&enter(q.fn,q.ln,"",$("code").value||q.room,"login",q.ph)}
+ if(a==="switch"){try{localStorage.removeItem("se_sess")}catch(e){}$("cont").innerHTML="";$("fn").value=$("ln").value=$("pin").value="";return}
+ if(a==="newroom"){var c="",ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";for(var j=0;j<5;j++)c+=ch[Math.floor(Math.random()*ch.length)];$("code").value=c;return}
+ if(!started)return;
+ if(a==="buy"){var o=belt.filter(function(x){return String(x.id)===i})[0];if(!o)return;var r=E[o.r],pr=r.p*(o.s?2:1);
+  if(cur()<pr){toast("არ გყოფნის მონეტები");return}if(free()<=0){toast("ბაზა სავსეა, გაყიდე ან გააფართოვე");return}
+  act(function(){me.coins-=pr;addEgg({id:uid(),r:o.r,s:o.s?1:0,hatchAt:now()+r.h*1000})});belt=belt.filter(function(x){return x!==o});toast("იყიდე: "+r.n)}
+ else if(a==="sell"){var e=me.eggs.filter(function(x){return x.id===i})[0];if(!e)return;var v=Math.floor(EE(e).p/2);act(function(){me.eggs=me.eggs.filter(function(x){return x!==e});me.coins+=v});toast("გაყიდე +"+fmt(v)+" 🪙")}
+ else if(a==="lock"){act(function(){me.lockUntil=now()+3600000;me.lockCd=now()+3630000});toast("🔒 ბაზა დაცულია")}
+ else if(a==="expand"){if(me.slots>=16)return;var c2=expCost();if(cur()<c2){toast("არ გყოფნის: "+fmt(c2)+" 🪙");return}act(function(){me.coins-=c2;me.slots++});toast("ახალი ადგილი დაემატა!")}
+ else if(a==="steal"){var tg=others[p];if(!tg||!online)return;if(pending){toast("ერთი ქურდობა უკვე მიმდინარეობს");return}
+  if((tg.lockUntil|0)>now()){toast("🔒 ეს ბაზა დაცულია");return}if(free()<=0){toast("ადგილი არ გაქვს ბაზაში");return}
+  pending=1;toast("იპარავ...");reply(p,{t:"steal",from:myId,egg:i});
+  setTimeout(function(){if(pending){pending=0;toast("პასუხი არ მოვიდა: მფლობელი ალბათ ოფლაინია")}},7000)}
+ else if(a==="trade")modal={k:"trade",p:p,i:i};
+ else if(a==="invite")modal={k:"invite"};
+ else if(a==="book")modal={k:"book"};
+ else if(a==="info"){var q=E[+i];toast(me.found[+i]?q.e+" "+q.n+" · "+fmt(q.p)+" 🪙":"❔ ჯერ არ გაქვს ნანახი, ფასი: "+fmt(q.p)+" 🪙")}
+ else if(a==="close")modal=null;
+ else if(a==="copy"){var l=$("lnk");try{navigator.clipboard.writeText(l.value).then(function(){toast("დაკოპირდა")},function(){l.select();toast("მონიშნე და დააკოპირე")})}catch(e){l.select();toast("მონიშნე და დააკოპირე")}}
+ else if(a==="offer"){var eg=me.eggs.filter(function(x){return x.id===i})[0];if(!eg||!modal)return;var tid=uid(),to=modal.p,want=modal.i;modal=null;
+  act(function(){me.eggs=me.eggs.filter(function(x){return x!==eg});me.offers.push({id:tid,to:to,toName:nm(to),egg:eg})});
+  busy.then(function(){return db.doc("rooms/"+room+"/inbox/"+to+"/items/"+tid).set({t:"trade",from:myId,fromName:me.name,give:eg,want:want,at:now()})});toast("შეთავაზება გაიგზავნა")}
+ else if(a==="acc")accept(i);else if(a==="dec")decline(i);
+ else if(a==="cancel"){var of=me.offers.filter(function(x){return x.id===i})[0];if(!of)return;
+  db.doc("rooms/"+room+"/inbox/"+of.to+"/items/"+i).delete().catch(function(){});act(function(){addEgg(of.egg);me.offers=me.offers.filter(function(x){return x!==of})})}
+ else if(a==="lion"){if(me.eggs.some(function(e){return e.r===LION})){toast("🦁 მეფე ლომი უკვე გყავს!");return}
+  var LP=E[LION].p;if(cur()<LP){toast("🦁 მეფე ლომი ღირს "+fmt(LP)+" 🪙. გაკლია "+fmt(LP-cur()));return}
+  if(free()<=0){toast("ბაზაში ადგილი არ გაქვს");return}
+  act(function(){me.coins-=LP;addEgg({id:uid(),r:LION,hatchAt:now()+120000})});toast("👑 იყიდე მეფე ლომი!");sendChat("👑 "+me.name+"-მა იყიდა მეფე ლომი 500B-ად!",true)}
+ else if(a==="vfab"){if(!voice.on)vjoin();else if(voice.stream){var t3=voice.stream.getAudioTracks()[0];t3.enabled=!t3.enabled;$("vmute").textContent=t3.enabled?"🎙 ჩართულია":"🔇 გამორთულია"}}
+ else if(a==="vtoggle"){if(voice.on)vleave();else vjoin()}
+ else if(a==="vmute"){if(voice.stream){var tr=voice.stream.getAudioTracks()[0];tr.enabled=!tr.enabled;$("vmute").textContent=tr.enabled?"🎙 ჩართულია":"🔇 გამორთულია"}}
+ else if(a==="send"){var inp=$("chatin");if(!online){toast("ჩატი ონლაინ რეჟიმშია");return}sendChat(inp.value);inp.value=""}
+ else if(a==="leave")leave();
+ else if(a==="tab")tab(i);
+ else if(a==="fadd")addFr($("fn2").value,$("ln2").value);
+ else if(a==="fq"){if(!myFr().some(function(f){return f.id===i})){act(function(){myFr().push({id:i,name:p||"მოთამაშე"})});toast("🤝 დაემატა: "+p);fkey="";frPoll()}}
+ else if(a==="frm"){act(function(){me.friends=myFr().filter(function(f){return f.id!==i})});fkey="";frRender()}
+ else if(a==="fgo"){var q=acc;busy.then(function(){leave();enter(q.fn,q.ln,"",p,"login",q.ph)})}
+ render()});
+
+function tick(){EV=evInfo();hb-=.25;if(hb<=0){hb=20;beat()}fpT-=.25;if(fpT<=0){fpT=curTab==="fr"?8:30;frPoll()}spawn-=.25;if(spawn<=0){spawn=3;var st=EV.on&&Math.random()<.25;belt.push({id:bid++,r:st?strongPick():beltPick(),s:st?1:0,x:-10})}belt.forEach(function(b){b.x+=6*.25});belt=belt.filter(function(b){return b.x<100});render()}
+function leave(){vleave();voice.ids=[];sigSeen={};unsubs.forEach(function(u){try{u()}catch(e){}});unsubs=[];clearInterval(timer);started=false;modal=null;mkey="";others={};inbox=[];seen={};belt=[];pending=0;
+ try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+ $("game").style.display="none";$("lion").style.display="none";$("vbar").style.display="none";$("lobby").style.display="block";$("modal").innerHTML="";chat=[]}
+var LDB=(function(){var K="se_localdb",D={},subs=[],bc=null;
+ try{D=JSON.parse(localStorage.getItem(K)||"{}")}catch(e){}
+ try{bc=new BroadcastChannel("se_localdb")}catch(e){}
+ function cp(x){return JSON.parse(JSON.stringify(x))}
+ function list(p){var o=[],pre=p+"/";for(var k in D)if(k.indexOf(pre)===0&&k.indexOf("/",pre.length)<0)o.push({id:k.slice(pre.length),data:(function(v){return function(){return cp(v)}})(D[k])});return o}
+ function fire(){subs.forEach(function(q){try{q.cb({docs:list(q.p)})}catch(e){}})}
+ if(bc)bc.onmessage=function(){try{D=JSON.parse(localStorage.getItem(K)||"{}")}catch(e){}fire()};
+ function ch(){try{localStorage.setItem(K,JSON.stringify(D))}catch(e){}fire();if(bc)bc.postMessage(1)}
+ return{doc:function(p){return{get:function(){var v=D[p];return Promise.resolve({exists:v!==undefined,data:function(){return cp(v)}})},
+   set:function(o){D[p]=cp(o);ch();return Promise.resolve()},delete:function(){delete D[p];ch();return Promise.resolve()}}},
+  collection:function(p){return{add:function(o){var id="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);D[p+"/"+id]=cp(o);ch();return Promise.resolve({id:id})},
+   onSnapshot:function(cb){var q={p:p,cb:cb};subs.push(q);setTimeout(function(){cb({docs:list(p)})},0);return function(){subs=subs.filter(function(x){return x!==q})}}}}}})();
+var FP={},fkey="",curTab="game",hb=0,fpT=0;
+function myFr(){return me.friends||(me.friends=[])}
+function tab(n){["game","room","fr","chat","more"].forEach(function(k){$("p_"+k).className="pane"+(k===n?" on":"");var b=document.querySelector('#tabs [data-i="'+k+'"]');if(b)b.className=k===n?"on":""});curTab=n;if(n==="fr"){fkey="";frPoll();frRender()}if(n==="chat"){var c=$("chatlog");c.scrollTop=c.scrollHeight}}
+function beat(){if(!online||!db||!me)return;db.doc("presence/"+myId).set({n:me.name,room:room,at:Date.now()}).catch(function(){})}
+function frPoll(){if(!online||!db)return;Promise.all(myFr().map(function(f){return db.doc("presence/"+f.id).get().then(function(s){FP[f.id]=s.exists?s.data():null}).catch(function(){})})).then(frRender)}
+function frRender(){var el=$("flist");if(!el||!me)return;var fr=myFr(),t=Date.now(),h="";
+ var fresh=Object.keys(others).filter(function(id){return !fr.some(function(f){return f.id===id})});
+ if(fresh.length){h+='<div class="fh">ამ ოთახში (დაამატე მეგობრად)</div>'+fresh.map(function(id){var n=names[id]||others[id].name||"მოთამაშე";return '<div class="frow"><span>🟢 <b>'+esc(n)+'</b></span><button class="mini" data-a="fq" data-i="'+esc(id)+'" data-p="'+esc(n)+'">➕</button></div>'}).join("")}
+ h+='<div class="fh">მეგობრები ('+fr.length+')</div>';
+ h+=fr.length?fr.map(function(f){var p=FP[f.id],on=p&&t-p.at<45000,same=on&&p.room===room;
+  return '<div class="frow"><span>'+(on?"🟢":"⚪")+' <b>'+esc(f.name)+'</b><small>'+(on?(same?"აქ არის, შენს ოთახში":"ოთახში "+esc(p.room)):"ახლა ოფლაინ")+'</small></span><span>'+(on&&!same?'<button class="mini" data-a="fgo" data-p="'+esc(p.room)+'">▶ შესვლა</button> ':"")+'<button class="mini ghost" data-a="frm" data-i="'+esc(f.id)+'">✕</button></span></div>'}).join(""):'<div class="frow" style="color:var(--mute)">ჯერ არავინ გყავს. ჩაწერე მეგობრის სახელი და გვარი ზემოთ.</div>';
+ var k=h+Math.floor(t/45000);if(k!==fkey){fkey=k;el.innerHTML=h}}
+async function addFr(fn,ln){fn=(fn||"").trim();ln=(ln||"").trim();if(!fn||!ln){toast("ჩაწერე მეგობრის სახელი და გვარი");return}
+ var id="u"+(await sha("se|"+nrm(fn)+"|"+nrm(ln))).slice(0,30);
+ if(id===myId){toast("ეს შენ ხარ 😄");return}
+ if(myFr().some(function(f){return f.id===id})){toast("უკვე გყავს მეგობრად");return}
+ var s;try{s=await db.doc("logins/"+id).get()}catch(e){toast("კავშირის შეცდომა");return}
+ if(!s.exists){toast("ასეთი მოთამაშე არ არის დარეგისტრირებული");return}
+ var d=s.data(),nm2=d.fn+" "+d.ln;act(function(){myFr().push({id:id,name:nm2})});$("fn2").value=$("ln2").value="";toast("🤝 დაემატა: "+nm2);frPoll()}
+function sess(){try{return JSON.parse(localStorage.getItem("se_sess")||"null")}catch(e){return null}}
+async function sha(t){try{var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("")}catch(e){var h=5381;for(var i=0;i<t.length;i++)h=(h*33^t.charCodeAt(i))>>>0;return"f"+h.toString(16)}}
+function nrm(t){return(t||"").trim().replace(/\s+/g," ").toLowerCase()}
+async function enter(fn,ln,pin,code,mode,ph0){
+ fn=(fn||"").trim().slice(0,12);ln=(ln||"").trim().slice(0,14);code=(code||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+ var err=function(m){$("lerr").textContent=m};err("");
+ if(!fn||!ln){err("ჩაწერე სახელი და გვარი");return}
+ if(!ph0&&!/^\d{4,6}$/.test(pin||"")){err("PIN უნდა იყოს 4-6 ციფრი");return}
+ if(code.length<3){err("ჩაწერე ოთახის კოდი (მინ. 3 სიმბოლო)");return}
+ try{if(window.claude&&!db)db=await claude.use("db")}catch(e){}
+ if(!db&&!window.claude)db=LDB;
+ if(!db){err("სერვერთან კავშირი ვერ მოხერხდა");return}
+ var id="u"+(await sha("se|"+nrm(fn)+"|"+nrm(ln))).slice(0,30),ph=ph0||await sha(id+"|"+pin+"|se1"),s;
+ try{s=await db.doc("logins/"+id).get()}catch(e){err("სერვერთან კავშირი ვერ მოხერხდა");return}
+ var nmf=fn+" "+ln;
+ if(mode==="reg"){if(s.exists){err("ეს სახელი და გვარი უკვე დარეგისტრირებულია. დააჭირე „შესვლა“");return}me=newMe(nmf)}
+ else{if(!s.exists){err("ასეთი ანგარიში არ არსებობს. ჯერ დააჭირე „რეგისტრაცია“");try{localStorage.removeItem("se_sess")}catch(e){}return}
+  if(s.data().ph!==ph){err("არასწორი PIN");return}
+  me=JSON.parse(JSON.stringify(s.data().me||newMe(nmf)));me.eggs=me.eggs||[];me.offers=me.offers||[];me.friends=me.friends||[];me.found=me.found||{};me.slots=me.slots||4;me.name=nmf;me.eggs.forEach(function(e){if(e.r===1000)e.r=LION});if(me.found[1000]){delete me.found[1000];me.found[LION]=1}
+  if(now()-me.ts>7200000){me.coins=cur(me.ts+7200000);me.ts=now()}}
+ myId=id;acc={fn:fn,ln:ln,ph:ph};room=code;online=true;names[myId]=nmf;
+ try{localStorage.setItem("se_sess",JSON.stringify({fn:fn,ln:ln,ph:ph,room:code}))}catch(e){}
+ try{location.hash=code}catch(e){}
+ try{persist();
+unsubs.push(db.collection("rooms/"+room+"/players").onSnapshot(function(sn){others={};sn.docs.forEach(function(d){if(d.id!==myId){others[d.id]=d.data();names[d.id]=d.data().name||names[d.id]}})},function(){}));
+ unsubs.push(db.collection("rooms/"+room+"/inbox/"+myId+"/items").onSnapshot(function(sn){
+    inbox=sn.docs.map(function(d){return{id:d.id,data:d.data()}});inbox.forEach(function(x){if(x.data.fromName)names[x.data.from]=x.data.fromName;
+     if(!seen[x.id]){seen[x.id]=1;if(x.data.t!=="trade")pq=pq.then(function(){return proc(x)}).catch(function(){})}})},function(){}));
+ unsubs.push(db.collection("rooms/"+room+"/chat").onSnapshot(function(sn){chat=sn.docs.map(function(d){return d.data()}).sort(function(a,b){return(a.at|0)-(b.at|0)});chatRender()},function(){}));
+ unsubs.push(db.collection("rooms/"+room+"/voice").onSnapshot(function(sn){voice.ids=sn.docs.map(function(d){if(d.data().name)names[d.id]=d.data().name;return d.id});vsync()},function(){}));
+ unsubs.push(db.collection("rooms/"+room+"/sig/"+myId+"/items").onSnapshot(function(sn){
+    sn.docs.map(function(d){return{id:d.id,data:d.data()}}).filter(function(x){return!sigSeen[x.id]}).sort(function(a,b){return(a.data.at|0)-(b.data.at|0)}).forEach(function(x){
+     sigSeen[x.id]=1;vq=vq.then(function(){return vproc(x)}).catch(function(){});db.doc("rooms/"+room+"/sig/"+myId+"/items/"+x.id).delete().catch(function(){})})},function(){}))
+ }catch(e){online=false}
+ $("lobby").style.display="none";$("game").style.display="block";$("lion").style.display="flex";$("vbar").style.display="flex";started=true;chat=[];chatRender();clearInterval(timer);timer=setInterval(tick,250);render();tab("game");hb=20;beat();frPoll();
+ if(db===LDB)setTimeout(function(){toast("ლოკალური რეჟიმი: მონაცემები ინახება მხოლოდ ამ ბრაუზერში")},2500);toast(mode==="reg"?"რეგისტრაცია წარმატებულია!":"კეთილი იყოს შენი დაბრუნება, "+fn+"!")}
+document.addEventListener("keydown",function(ev){if(ev.key==="Escape"&&modal){modal=null;render();return}if(ev.key!=="Enter")return;var id=ev.target.id;
+ if(id==="chatin"){if(!online){toast("ჩატი ონლაინ რეჟიმშია");return}sendChat(ev.target.value);ev.target.value=""}
+ else if(id==="fn"||id==="ln"||id==="pin"||id==="code")enter($("fn").value,$("ln").value,$("pin").value,$("code").value,"login")});
+(function(){var q=sess(),hc=(location.hash||"").slice(1).toUpperCase().replace(/[^A-Z0-9]/g,"");
+ $("code").value=hc||(q&&q.room)||"";
+ if(q){$("fn").value=q.fn;$("ln").value=q.ln;$("cont").innerHTML='<div class="row" style="justify-content:center"><button data-a="cont">▶ გაგრძელება: '+esc(q.fn+" "+q.ln)+'</button><button class="mini ghost" data-a="switch">სხვა ანგარიში</button></div>';
+  enter(q.fn,q.ln,"",$("code").value,"login",q.ph)}})();
+</script>
+</body>
+</html>
